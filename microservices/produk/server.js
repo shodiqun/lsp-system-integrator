@@ -46,7 +46,7 @@ app.get("/", (_req, res) => {
     </head>
     <body>
       <div class="page">
-        <h1>Layanan Produk E‑Commerce sodiq</h1>
+        <h1>Layanan Produk E‑Commerce sodiq lsp</h1>
         <p>
           Layanan ini berjalan di <strong>Docker container</strong> pada VPS dan diekspos di port <code>${PORT}</code>.
           Data di bawah berasal dari API yang sama dengan endpoint <code>/products</code>.
