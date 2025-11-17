@@ -1,0 +1,16 @@
+{
+  "name": "keranjang-service",
+  "version": "1.0.0",
+  "description": "Cart service writing Redis keys for abandoned cart detection.",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "redis": "^4.7.0",
+    "uuid": "^9.0.1"
+  }
+}

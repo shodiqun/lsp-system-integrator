@@ -1,0 +1,5 @@
+apiVersion: v2
+name: ecommerce
+description: Deploys the demo microservices that drive abandoned cart notifications.
+type: application
+version: 0.1.0

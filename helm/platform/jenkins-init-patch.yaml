@@ -1,0 +1,7 @@
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: init
+          image: jenkins-lts-min:latest
+          imagePullPolicy: IfNotPresent

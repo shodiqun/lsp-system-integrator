@@ -1,0 +1,12 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkins-lts-min:latest
+          imagePullPolicy: IfNotPresent
+      initContainers:
+        - name: config-reload-init
+        - name: init
+          image: jenkins-lts-min:latest
+

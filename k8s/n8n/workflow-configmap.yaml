@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-workflows
+  namespace: ecommerce
+data:
+  abandoned-cart.json: |
+    {
+      "name": "Abandoned Cart - Send Discount",
+      "nodes": [
+        {
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "cart/abandoned",
+            "responseMode": "onReceived",
+            "responseCode": 200
+          },
+          "id": "1",
+          "name": "Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2,
+          "position": [
+            280,
+            300
+          ]
+        },
+        {
+          "parameters": {
+            "fromEmail": "replace-with-verified-sender@example.com",
+            "fromName": "TokoDigital",
+            "toEmail": "={{$json.email}}",
+            "subject": "={{`Diskon keranjang ${$json.discountCode}`}}",
+            "text": "={{`Halo ${$json.email}, keranjangmu masih ada. Kode: ${$json.discountCode}`}}",
+            "html": "={{ `<p>Halo ${$json.email},</p><p>Keranjangmu masih ada. Pakai kode <b>${$json.discountCode}</b> dalam 1 jam.</p><p>ID Cart: ${$json.cartKey}</p>` }}"
+          },
+          "id": "2",
+          "name": "SendGrid",
+          "type": "n8n-nodes-base.sendGrid",
+          "typeVersion": 2,
+          "position": [
+            560,
+            300
+          ],
+          "credentials": {
+            "sendGridApi": {
+              "name": "SendGrid account"
+            }
+          }
+        }
+      ],
+      "connections": {
+        "Webhook": {
+          "main": [
+            [
+              {
+                "node": "SendGrid",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "pinData": {},
+      "active": true,
+      "settings": {},
+      "staticData": {}
+    }

@@ -1,0 +1,40 @@
+imagePullPolicy: IfNotPresent
+
+services:
+  - name: produk
+    image: tokoauto/produk-service
+    tag: latest
+    port: 3001
+    host: produk.local
+    env: []
+  - name: user
+    image: tokoauto/user-service
+    tag: latest
+    port: 3000
+    host: user.local
+    env: []
+  - name: keranjang
+    image: tokoauto/keranjang-service
+    tag: latest
+    port: 3002
+    host: keranjang.local
+    env:
+      - name: REDIS_HOST
+        value: "redis-cart"
+      - name: ABANDONED_DELAY_SECONDS
+        value: "3600"
+      - name: N8N_WEBHOOK_URL
+        value: "http://n8n.local/webhook/cart/abandoned"
+  - name: pembayaran
+    image: tokoauto/pembayaran-service
+    tag: latest
+    port: 3003
+    host: pembayaran.local
+    env: []
+
+serviceAccount:
+  create: false
+
+ingress:
+  enabled: true
+  className: nginx

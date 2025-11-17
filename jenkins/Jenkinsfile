@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB = credentials('dockerhub-creds')
+        REGISTRY  = "tokoauto"
+    }
+
+    options {
+        timestamps()
+    }
+
+    stages {
+        stage('Install dependencies') {
+            steps {
+                script {
+                    def services = ['produk','user','keranjang','pembayaran']
+                    services.each { svc ->
+                        dir("microservices/${svc}") {
+                            sh 'npm install --omit=dev'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build images') {
+            steps {
+                script {
+                    def services = ['produk','user','keranjang','pembayaran']
+                    services.each { svc ->
+                        sh "docker build -t ${REGISTRY}/${svc}-service:latest microservices/${svc}"
+                    }
+                }
+            }
+        }
+
+        stage('Push images') {
+            steps {
+                sh 'echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin'
+                script {
+                    def services = ['produk','user','keranjang','pembayaran']
+                    services.each { svc ->
+                        sh "docker push ${REGISTRY}/${svc}-service:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Helm charts') {
+            steps {
+                sh 'helm upgrade --install ecommerce ./helm/ecommerce -n ecommerce --create-namespace'
+                sh 'helm upgrade --install platform ./helm/platform -n platform --create-namespace'
+            }
+        }
+    }
+}

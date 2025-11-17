@@ -1,0 +1,14 @@
+apiVersion: v2
+name: platform
+description: Supporting platform services (Jenkins CI and monitoring stack) for the ecommerce project.
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: jenkins
+    version: "5.3.2"
+    repository: https://charts.jenkins.io
+  - name: kube-prometheus-stack
+    alias: monitoring
+    version: "58.3.0"
+    repository: https://prometheus-community.github.io/helm-charts

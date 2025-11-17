@@ -1,0 +1,9 @@
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: init
+          image: jenkins-lts-min:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh","-c"]
+          args: ["echo skip-init && exit 0"]

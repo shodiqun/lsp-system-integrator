@@ -1,0 +1,40 @@
+﻿{
+  "name": "Abandoned Cart - Basic",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cart/abandoned",
+        "responseMode": "onReceived",
+        "responseCode": 200
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [280, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "replace-with-verified@example.com",
+        "fromName": "TokoDigital",
+        "toEmail": "={{$json.body.email}}",
+        "subject": "={{'Diskon keranjang ' + $json.body.discountCode}}",
+        "text": "={{'Halo ' + $json.body.email + ', keranjangmu masih ada. Kode: ' + $json.body.discountCode}}"
+      },
+      "name": "SendGrid",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [560, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [ { "node": "SendGrid", "type": "main", "index": 0 } ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "staticData": {}
+}

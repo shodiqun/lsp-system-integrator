@@ -1,0 +1,33 @@
+﻿apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: abandoned-detector
+  namespace: ecommerce
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: detector
+              image: abandoned-detector:0.1
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: REDIS_HOST
+                  value: redis-cart
+                - name: ABANDON_SECONDS
+                  value: "60"
+                - name: N8N_WEBHOOK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: abandoned-config
+                      key: webhookUrl
+                - name: DEFAULT_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: abandoned-config
+                      key: defaultEmail

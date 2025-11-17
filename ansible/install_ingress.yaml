@@ -1,0 +1,19 @@
+---
+- name: Enable NGINX ingress on Minikube
+  hosts: minikube
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Enable ingress addon
+      ansible.builtin.command: minikube addons enable ingress
+      register: enable_result
+      changed_when: "'enabled' in enable_result.stdout"
+      failed_when:
+        - enable_result.rc != 0
+        - "'is already enabled' not in enable_result.stdout"
+
+    - name: Wait for ingress controller rollout
+      ansible.builtin.command: kubectl -n ingress-nginx rollout status deploy/ingress-nginx-controller --timeout=180s
+      register: rollout_status
+      changed_when: false

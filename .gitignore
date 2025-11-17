@@ -1,0 +1,11 @@
+# Terraform state
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.*
+
+# Node modules
+microservices/*/node_modules/
+
+# Python cache
+**/__pycache__/

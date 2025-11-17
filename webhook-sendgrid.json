@@ -1,0 +1,30 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cart/abandoned"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [300, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@tokoauto.com",
+        "toEmail": "{{$json.email}}",
+        "subject": "Keranjang Kamu Masih Menunggu!",
+        "text": "Halo! Kamu meninggalkan beberapa item di keranjang. Dapatkan diskon 10% jika checkout sekarang!"
+      },
+      "name": "Send Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [600, 200],
+      "credentials": { "sendGridApi": "SendGrid API" }
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [ [ { "node": "Send Email", "type": "main", "index": 0 } ] ] }
+  }
+}

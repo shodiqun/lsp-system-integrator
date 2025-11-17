@@ -1,0 +1,74 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: ecommerce
+  labels:
+    app: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      initContainers:
+        - name: import-workflows
+          image: n8nio/n8n:1.63.1
+          imagePullPolicy: IfNotPresent
+          command: ["sh","-lc"]
+          # Remove stale config (to avoid mismatched encryption keys) then import workflow
+          args: ["rm -f /home/node/.n8n/config && n8n import:workflow --input /workflows/abandoned-cart.json || true"]
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /home/node/.n8n
+            - name: n8n-workflows
+              mountPath: /workflows
+          env:
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secrets
+                  key: encryptionKey
+      containers:
+        - name: n8n
+          image: n8nio/n8n:1.63.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: N8N_HOST
+              value: n8n.local
+            - name: N8N_PORT
+              value: "5678"
+            - name: N8N_PROTOCOL
+              value: http
+            - name: WEBHOOK_URL
+              value: http://n8n.local/
+            - name: N8N_DIAGNOSTICS_ENABLED
+              value: "false"
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secrets
+                  key: encryptionKey
+          ports:
+            - containerPort: 5678
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /home/node/.n8n
+      volumes:
+        - name: n8n-data
+          emptyDir: {}
+        - name: n8n-workflows
+          configMap:
+            name: n8n-workflows
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: n8n-secrets
+  namespace: ecommerce
+stringData:
+  encryptionKey: "replace-with-a-random-32+char-secret"
